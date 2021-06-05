@@ -115,6 +115,8 @@ function love.load()
 	local windowWidth = 1200
 	local windowHeight = 480
 	local success = love.window.setMode(windowWidth, windowHeight, windowMode)
+
+
 end
 
 function love.update(dt)
