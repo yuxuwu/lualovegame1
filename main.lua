@@ -9,16 +9,16 @@ Check 4. Continuously spawn new Moving Box
 Check - Randomize speed of moving box
 Check - Have random wait time before moving box is spawned
 Check - Ready, Go, Lose text
-- Wider window
-- Different graphics
-	- Moving box: bullet
-		- Gun
+Check - Wider window
+- Stock graphics
+	- Moving box: Firing bullet
+		Check - Gun
 		- Bullet
-		- Blast
-		- Punched bullet
+		Check - Blast
 	- Target box: fist
 		- Punch
 		- retract
+	- Baby
 	- Funky background
 - Sound effects
 - Better Start and end scripting
@@ -42,7 +42,7 @@ end
 GameStates = enum{"ready", "go", "lose"}
 
 movingRect = {x=100, y=200, width=100, height=100, speed=200, draw=true}
-targetRect = {x=500, y=200, width=200, height=100, draw=true}
+targetRect = {x=900, y=200, width=200, height=100, draw=true}
 score = 0
 tick = require "tick"
 gameState = GameStates.go
@@ -114,9 +114,10 @@ function love.load()
 	}
 	local windowWidth = 1200
 	local windowHeight = 480
-	local success = love.window.setMode(windowWidth, windowHeight, windowMode)
+	local success =
+		love.window.setMode(windowWidth, windowHeight, windowMode)
 
-
+	love.graphics.setBackgroundColor(27/255, 135/255, 36/255)
 end
 
 function love.update(dt)
@@ -134,7 +135,7 @@ function love.draw()
 	if gameState == GameStates.ready then
 		love.graphics.print("Ready...", 250, 100)
 	elseif gameState == GameStates.go then
-		love.graphics.print("GOOO", 250, 100)
+		love.graphics.print("GOOOOOOOOOOOOOOOOOOOOOO", 250, 100)
 	elseif gameState == GameStates.lose then
 		love.graphics.print("You fucking loser...", 250, 100)
 	end
