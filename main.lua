@@ -1,30 +1,3 @@
---[[
-Title: Hitbox Game
-Description: React to an incoming block, and time your button press to when 2 hitboxes match up.
-
-Check 1. 2 Entities, Target Box (on right), and Moving Box (from left)
-Check 2. Score counter
-Check 3. Delete box after a) has been caught by target b) goes out of bounds
-Check 4. Continuously spawn new Moving Box
-Check - Randomize speed of moving box
-Check - Have random wait time before moving box is spawned
-Check - Ready, Go, Lose text
-Check - Wider window
-- Stock graphics
-	- Moving box: Firing bullet
-		Check - Gun
-		- Bullet
-		Check - Blast
-	- Target box: fist
-		- Punch
-		- retract
-	- Baby
-	- Funky background
-- Sound effects
-- Better Start and end scripting
---]]
-
-
 -------------------------------
 ---------vV GLOBALS Vv---------
 -------------------------------
@@ -118,6 +91,30 @@ function love.load()
 		love.window.setMode(windowWidth, windowHeight, windowMode)
 
 	love.graphics.setBackgroundColor(27/255, 135/255, 36/255)
+
+	-- Hand
+	hand_frames = {}
+	hand_dt = 0
+	animate_hand = false
+	hand_frame = 1
+	for i=0,2 do
+		table.insert(hand_frames, love.graphics.newImage("assets/hand-"..i..".png"))
+	end
+	for i=1,0,-1 do
+		table.insert(hand_frames, love.graphics.newImage("assets/hand-"..i..".png"))
+	end
+
+	-- Bullet
+	bullet = love.graphics.newImage("assets/bullet.png")
+
+	-- Gun
+	gun_sheet = love.graphics.newImage("assets/gun-sheet.png")
+	gun_frames = {}
+	gun_frame_width = 60
+	gun_frame_height = 40
+	for i=0,19 do
+		table.insert(gun_frames, love.graphics.newQuad(0, i*gun_frame_height, gun_frame_width, gun_frame_height, gun_sheet:getWidth(), gun_sheet:getHeight()))
+	end
 end
 
 function love.update(dt)
@@ -128,6 +125,17 @@ function love.update(dt)
 	if movingRect.x > 1000 then
 		targetMiss()
 	end
+
+	-- Hand
+	if animate_hand then
+		hand_dt = hand_dt + dt*20
+		hand_frame = math.floor(hand_dt) % 5 + 1
+		if hand_frame == 5 then
+			hand_dt = 0
+			animate_hand = false
+		end
+	end
+
 end
 
 function love.draw()
@@ -149,10 +157,18 @@ function love.draw()
 	-- Moving
 	if movingRect.draw then
 		love.graphics.rectangle("line", movingRect.x, movingRect.y, movingRect.width, movingRect.height)
+		-- TODO: Bullet is rendering at 0, 0; render it instead from the middle of the hitbox
+		love.graphics.draw(bullet, movingRect.x, movingRect.y, math.rad(180), .5, .5, bullet:getWidth()/2, bullet:getHeight()/2)
 	end
 
 	-- Score
 	love.graphics.print("Score: "..score, 100, 100)
+
+	-- Hand
+	love.graphics.draw(hand_frames[hand_frame], targetRect.x, targetRect.y-50)
+
+	-- Gun
+	love.graphics.draw(gun_sheet, gun_frames[1], 200, 250, 0, -5, 5, gun_frame_width/2, gun_frame_height/2)
 end
 
 function love.keypressed(key)
@@ -160,6 +176,8 @@ function love.keypressed(key)
 		if checkCollided(movingRect, targetRect) then
 			targetHit()
 		end
+		animate_hand = true
+		hand_dt = 0
 	elseif key == "escape" then
 		love.event.quit()
 	end
